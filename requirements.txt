@@ -1,0 +1,52 @@
+# Core Dependencies
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+pyyaml>=6.0
+
+# Google ADK (Agent Development Kit)
+google-adk>=0.1.0  # Install from: pip install google-adk or follow ADK documentation
+
+# Database (SIMPLIFIED - SQLite only, no SQLAlchemy for MVP)
+# sqlalchemy>=2.0.0  # Removed for MVP - using simple SQLite wrapper
+# alembic>=1.12.0    # Removed for MVP
+
+# API Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# LLM Integration
+openai>=1.3.0
+anthropic>=0.7.0
+langchain>=0.1.0
+langchain-openai>=0.0.2
+langchain-anthropic>=0.1.0
+
+# RAG & Vector Store
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+
+# Report Generation
+jinja2>=3.1.0
+weasyprint>=60.0
+markdown>=3.5.0
+
+# Utilities
+python-dotenv>=1.0.0
+aiofiles>=23.2.0
+httpx>=0.25.0
+pydantic-email>=2.0.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+
+# Logging & Monitoring
+structlog>=23.2.0
+
+# Data Processing
+pandas>=2.1.0
+numpy>=1.24.0
+

@@ -1,0 +1,17 @@
+{
+  "project": "ADCO",
+  "tasks": [
+    {
+      "id": 1,
+      "desc": "Implement coordinator agent"
+    },
+    {
+      "id": 2,
+      "desc": "Implement risk scanner"
+    },
+    {
+      "id": 3,
+      "desc": "Implement RAG engine"
+    }
+  ]
+}

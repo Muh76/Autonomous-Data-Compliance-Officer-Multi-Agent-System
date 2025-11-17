@@ -1,0 +1,57 @@
+# ADCO Multi-Agent System Configuration
+
+# LLM Configuration
+llm:
+  provider: openai  # openai, anthropic, or local
+  model: gpt-4-turbo-preview
+  temperature: 0.7
+  max_tokens: 2000
+
+# Agent Configuration
+agents:
+  coordinator:
+    enabled: true
+    timeout: 300
+  risk_scanner:
+    enabled: true
+    timeout: 600
+    scan_depth: 1000
+  policy_matcher:
+    enabled: true
+    timeout: 300
+    top_k: 5
+  report_writer:
+    enabled: true
+    timeout: 300
+  critic:
+    enabled: true
+    timeout: 180
+  watchdog:
+    enabled: true
+    interval: 3600  # seconds
+
+# Data Sources
+data_sources:
+  - type: database
+    enabled: true
+  - type: file_system
+    enabled: true
+  - type: api
+    enabled: false
+
+# Compliance Frameworks
+compliance_frameworks:
+  - name: GDPR
+    enabled: true
+  - name: HIPAA
+    enabled: false
+  - name: CCPA
+    enabled: false
+
+# Report Settings
+reports:
+  default_format: pdf
+  include_summary: true
+  include_recommendations: true
+  template_path: ./adk/tools/templates
+

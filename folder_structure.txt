@@ -1,0 +1,19 @@
+adco_project/
+ ├── adk/
+ │   ├── agents/
+ │   │   ├── coordinator.py
+ │   │   ├── risk_scanner.py
+ │   │   ├── policy_matcher.py
+ │   │   ├── report_writer.py
+ │   │   ├── critic.py
+ │   │   └── watchdog.py
+ │   ├── tools/
+ │   └── config.yaml
+ ├── data/
+ │   ├── regulations/
+ │   └── logs/
+ ├── docs/
+ ├── app/
+ │   ├── api/
+ │   └── ui/
+ └── evaluation/

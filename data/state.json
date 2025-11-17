@@ -1,0 +1,18 @@
+{
+  "state": {
+    "test_key": {
+      "value": "test_value",
+      "updated_at": "2025-11-17T16:46:37.780557"
+    }
+  },
+  "agent_contexts": {
+    "agent1": {
+      "context_key": {
+        "value": "context_value",
+        "updated_at": "2025-11-17T16:46:37.781665"
+      }
+    }
+  },
+  "task_states": {},
+  "updated_at": "2025-11-17T16:46:37.781677"
+}
