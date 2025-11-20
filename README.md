@@ -60,9 +60,23 @@ This project demonstrates **7 key agentic AI concepts**:
 
 ### ✅ 2. Tools
 - **Custom Tools**: GoogleSearchTool for regulation lookup
-- **Built-in Tools**: Google Search, Code Execution (Python sandbox)
+- **Built-in Tools**: 
+  - Google Search for finding regulations online
+  - **Code Execution**: Python sandbox for data analysis (NEW!)
 - **OpenAPI Tools**: External regulation API integration
 - **Long-running Operations**: Pause/resume for large scans
+
+**Code Execution Example**:
+```python
+from adk.tools.code_executor import CodeExecutor
+
+executor = CodeExecutor(timeout=30)
+result = await executor.analyze_data(
+    data=[{'name': 'John', 'email': 'john@example.com'}],
+    analysis_type="pii_scan"
+)
+# Returns: {'pii_columns': ['email'], 'pii_risk': 'HIGH'}
+```
 
 ### ✅ 3. Sessions & Memory (Google ADK)
 - **Session Management**: ADK-inspired session service with state tracking

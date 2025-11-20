@@ -3,7 +3,7 @@ ADK-based agent wrapper for ADCO system.
 Integrates Google Agent Development Kit with existing infrastructure.
 """
 
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, TYPE_CHECKING
 import uuid
 from datetime import datetime
 
@@ -13,10 +13,12 @@ from google.adk.sessions import InMemorySessionService, Session
 
 # Existing infrastructure
 from ..core.logger import get_logger
-from ..core.message_bus import MessageBus, MessageType
-from ..core.state_manager import StateManager
-from ..core.task_queue import TaskQueue
-from ..tools.llm_client import get_llm_client
+from ..core.message_bus import MessageType
+
+if TYPE_CHECKING:
+    from ..core.message_bus import MessageBus
+    from ..core.state_manager import StateManager
+    from ..core.task_queue import TaskQueue
 
 logger = get_logger(__name__)
 
@@ -36,9 +38,9 @@ class ADKAgent(Agent):
         self,
         name: str,
         session_service: Optional[InMemorySessionService] = None,
-        message_bus: Optional[MessageBus] = None,
-        state_manager: Optional[StateManager] = None,
-        task_queue: Optional[TaskQueue] = None,
+        message_bus: Optional["MessageBus"] = None,
+        state_manager: Optional["StateManager"] = None,
+        task_queue: Optional["TaskQueue"] = None,
     ):
         """
         Initialize ADK agent with ADCO infrastructure.
@@ -103,6 +105,7 @@ class ADKAgent(Agent):
     async def initialize(self) -> None:
         """Initialize agent resources (LLM client, etc.)."""
         try:
+            from ..tools.llm_client import get_llm_client
             self.llm_client = get_llm_client()
             self.logger.info("LLM client initialized")
         except Exception as e:
