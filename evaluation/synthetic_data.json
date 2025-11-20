@@ -1,0 +1,30 @@
+[
+    {
+        "id": "test_1",
+        "source": "db_users_prod",
+        "source_type": "database",
+        "expected_risks": [
+            "pii",
+            "access_control"
+        ],
+        "description": "Production user database with unencrypted emails"
+    },
+    {
+        "id": "test_2",
+        "source": "api_payment_gateway",
+        "source_type": "api",
+        "expected_risks": [
+            "security"
+        ],
+        "description": "Payment API with weak authentication"
+    },
+    {
+        "id": "test_3",
+        "source": "file_share_public",
+        "source_type": "file",
+        "expected_risks": [
+            "access_control"
+        ],
+        "description": "Public file share with sensitive docs"
+    }
+]

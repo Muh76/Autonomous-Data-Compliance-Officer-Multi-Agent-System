@@ -111,3 +111,6 @@ class PolicyRegulationDB(Base):
     metadata = Column(JSON, nullable=True)
     indexed_at = Column(DateTime, nullable=True)
 
+
+
+

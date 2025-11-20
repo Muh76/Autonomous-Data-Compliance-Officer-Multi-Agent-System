@@ -59,3 +59,6 @@ class Retriever:
         
         return await self.retrieve(query, top_k=top_k)
 
+
+
+

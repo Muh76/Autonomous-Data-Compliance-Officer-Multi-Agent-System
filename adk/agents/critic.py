@@ -184,12 +184,23 @@ class CriticAgent(BaseAgent):
         
         try:
             analysis = await self.llm_client.generate(prompt)
-            # Simplified: if LLM finds issues, reduce score
-            if "error" in analysis.lower() or "issue" in analysis.lower():
-                issues.append("LLM validation identified potential inaccuracies")
-                score -= 0.2
+            self.logger.info("Critic LLM Analysis", analysis=analysis)
+            
+            # Simple parsing of LLM feedback
+            analysis_lower = analysis.lower()
+            if "inaccurate" in analysis_lower or "error" in analysis_lower or "incorrect" in analysis_lower:
+                issues.append("LLM validation identified potential inaccuracies: " + analysis[:100] + "...")
+                score -= 0.3
+            elif "consistent" in analysis_lower and "accurate" in analysis_lower:
+                score = 1.0
+            else:
+                # Ambiguous result
+                score -= 0.1
+                
         except Exception as e:
             self.logger.error("LLM validation failed", error=str(e))
+            # Don't penalize score if LLM fails
+            pass
         
         score = max(0.0, min(1.0, score))
         

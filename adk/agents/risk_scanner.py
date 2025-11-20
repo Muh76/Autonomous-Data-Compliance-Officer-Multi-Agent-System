@@ -4,24 +4,35 @@ from typing import Dict, Any, List
 import uuid
 from datetime import datetime
 
-from ..core.base_agent import BaseAgent
+from ..core.adk_agent import ADKAgent
 from ..core.message_bus import MessageType
 from ..core.logger import get_logger
 from ..models.models import RiskAssessment, Severity, RiskCategory, ScanResult
+from presidio_analyzer import AnalyzerEngine
 
 logger = get_logger(__name__)
 
 
-class RiskScannerAgent(BaseAgent):
-    """Scans data sources and detects risks."""
+class RiskScannerAgent(ADKAgent):
+    """Scans data sources and detects risks using Presidio."""
     
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.scan_patterns = {
+    def __init__(self, name: str = "RiskScanner", **kwargs):
+        super().__init__(name=name, **kwargs)
+        # Store agent-specific attributes in context dict
+        self._adco_context["analyzer"] = AnalyzerEngine()
+        self._adco_context["scan_patterns"] = {
             "pii": ["email", "ssn", "credit_card", "phone", "address"],
             "sensitive": ["password", "token", "secret", "key"],
             "access": ["permission", "role", "privilege"],
         }
+    
+    @property
+    def analyzer(self):
+        return self._adco_context["analyzer"]
+    
+    @property
+    def scan_patterns(self):
+        return self._adco_context["scan_patterns"]
     
     async def initialize(self) -> None:
         """Initialize risk scanner."""
@@ -92,26 +103,44 @@ class RiskScannerAgent(BaseAgent):
     
     async def _scan_database(self, source: str, depth: int) -> List[RiskAssessment]:
         """Scan a database for risks."""
-        # Placeholder implementation
-        # In real implementation, connect to database and scan
+        # In a real scenario, we would connect to the DB.
+        # For this demo, we will simulate scanning text data that represents DB content.
         risks = []
         
-        # Example risk detection
-        risk = RiskAssessment(
-            risk_id=str(uuid.uuid4()),
-            category=RiskCategory.DATA_PRIVACY,
-            severity=Severity.HIGH,
-            title="Potential PII Exposure",
-            description=f"Database {source} may contain unencrypted PII data",
-            likelihood=0.7,
-            impact=0.8,
-            risk_score=0.75,
-            affected_data=["email", "phone"],
-            detected_at=datetime.utcnow(),
-            agent_id=self.agent_id,
-        )
-        risks.append(risk)
+        # Simulated data (replace with actual DB fetch in production)
+        simulated_data = [
+            "User: john.doe@example.com, Phone: 555-0123",
+            "API Key: sk-1234567890abcdef",
+            "Address: 123 Main St, New York, NY"
+        ]
         
+        for text in simulated_data:
+            detected_risks = await self._scan_text(text, source)
+            risks.extend(detected_risks)
+            
+        return risks
+
+    async def _scan_text(self, text: str, source: str) -> List[RiskAssessment]:
+        """Scan text for PII using Presidio."""
+        risks = []
+        results = self.analyzer.analyze(text=text, language='en')
+        
+        for result in results:
+            risk = RiskAssessment(
+                risk_id=str(uuid.uuid4()),
+                category=RiskCategory.DATA_PRIVACY,
+                severity=Severity.HIGH if result.score > 0.8 else Severity.MEDIUM,
+                title=f"Detected {result.entity_type}",
+                description=f"Found {result.entity_type} in {source} with confidence {result.score:.2f}",
+                likelihood=result.score,
+                impact=0.8, # Default high impact for PII
+                risk_score=result.score * 0.8,
+                affected_data=[result.entity_type],
+                detected_at=datetime.utcnow(),
+                agent_id=self.agent_id,
+            )
+            risks.append(risk)
+            
         return risks
     
     async def _scan_file_system(self, source: str, depth: int) -> List[RiskAssessment]:

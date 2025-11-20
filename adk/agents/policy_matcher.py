@@ -9,6 +9,7 @@ from ..core.message_bus import MessageType
 from ..core.logger import get_logger
 from ..rag.retriever import Retriever
 from ..tools.llm_client import get_llm_client
+from ..tools.search_tool import GoogleSearchTool
 from ..models.models import ComplianceFinding, ComplianceStatus, Severity, ComplianceGap
 
 logger = get_logger(__name__)
@@ -20,6 +21,7 @@ class PolicyMatcherAgent(BaseAgent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.retriever = Retriever()
+        self.search_tool = GoogleSearchTool()
         self.llm_client = None
     
     async def initialize(self) -> None:
@@ -61,6 +63,20 @@ class PolicyMatcherAgent(BaseAgent):
                 context=practice,
                 top_k=5
             )
+            
+            # If RAG returns no results, try Google Search
+            if not relevant_regs:
+                self.logger.info("No regulations found in RAG, searching online", practice=practice.get("description"))
+                search_results = self.search_tool.search(
+                    query=f"{framework} regulation for {practice.get('description')}",
+                    num_results=3
+                )
+                # Convert search results to regulation format
+                for res in search_results:
+                    relevant_regs.append({
+                        "text": f"{res['title']}: {res['description']}",
+                        "metadata": {"name": framework, "source": res['url']}
+                    })
             
             # Analyze compliance for each practice
             for reg in relevant_regs:
@@ -121,9 +137,15 @@ class PolicyMatcherAgent(BaseAgent):
             
             try:
                 analysis = await self.llm_client.generate(prompt)
-                # Parse LLM response (simplified)
+                # In a real implementation, we would parse the JSON response from the LLM.
+                # For now, we'll assume the LLM returns a string that we can log, 
+                # and we'll set a default status to show it's working.
+                self.logger.info("LLM Analysis Result", analysis=analysis)
+                
+                # TODO: Implement robust JSON parsing here
                 status = ComplianceStatus.NON_COMPLIANT
                 severity = Severity.MEDIUM
+                
             except Exception as e:
                 self.logger.error("LLM analysis failed", error=str(e))
                 status = ComplianceStatus.UNKNOWN

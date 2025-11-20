@@ -1,26 +1,93 @@
-# ADCO Multi-Agent System
+# ADCO: Autonomous Data & Compliance Officer
 
-Autonomous Data & Compliance Officer Multi-Agent System
+> **Multi-Agent System for Automated Compliance Auditing**  
+> Built with Google ADK, Vertex AI (Gemini), ChromaDB, and Presidio
 
-## Overview
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Google ADK](https://img.shields.io/badge/Google-ADK-4285F4.svg)](https://google.github.io/adk-docs/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-The ADCO (Autonomous Data & Compliance Officer) Multi-Agent System is a comprehensive compliance monitoring and reporting system that uses multiple specialized AI agents to:
+## 🎯 Problem Statement
 
-- Scan data sources for compliance risks
-- Match data practices against regulations
-- Generate compliance reports
-- Continuously monitor compliance status
+Compliance audits are **manual, slow, and error-prone**. Organizations spend 80% of compliance officer time on repetitive tasks like:
+- Scanning databases for PII exposure
+- Matching data practices against regulations (GDPR, HIPAA, CCPA)
+- Generating audit reports
+- Tracking compliance trends
 
-## Architecture
+## 💡 Solution: Multi-Agent Automation
 
-The system consists of 6 specialized agents:
+ADCO automates the entire compliance lifecycle using **6 specialized AI agents**, each an expert in their domain:
 
-1. **Coordinator Agent**: Orchestrates workflows and coordinates other agents
-2. **Risk Scanner Agent**: Scans data sources and detects risks
-3. **Policy Matcher Agent**: Matches data practices against compliance regulations using RAG
-4. **Report Writer Agent**: Generates compliance reports in multiple formats
-5. **Critic Agent**: Validates quality and consistency of agent outputs
-6. **Watchdog Agent**: Continuously monitors system and triggers audits
+### Agent Architecture
+
+```mermaid
+graph TD
+    User[User/API] --> Coordinator[Coordinator Agent]
+    Coordinator --> RiskScanner[Risk Scanner Agent]
+    Coordinator --> PolicyMatcher[Policy Matcher Agent]
+    Coordinator --> ReportWriter[Report Writer Agent]
+    RiskScanner --> Presidio[Presidio PII Detection]
+    PolicyMatcher --> RAG[ChromaDB RAG]
+    PolicyMatcher --> Gemini[Vertex AI Gemini]
+    Critic[Critic Agent] --> Gemini
+    Watchdog[Watchdog Agent] --> Coordinator
+    
+    style Coordinator fill:#4285F4
+    style RiskScanner fill:#34A853
+    style PolicyMatcher fill:#FBBC04
+    style ReportWriter fill:#EA4335
+    style Critic fill:#9334E6
+    style Watchdog fill:#FF6D00
+```
+
+1. **Coordinator Agent**: Orchestrates workflows (sequential, parallel, loop patterns)
+2. **Risk Scanner Agent**: Detects PII using Presidio (emails, SSNs, phone numbers)
+3. **Policy Matcher Agent**: Matches practices against regulations using RAG + Gemini
+4. **Report Writer Agent**: Generates compliance reports (PDF, JSON, Markdown)
+5. **Critic Agent**: Validates output quality using LLM-based review
+6. **Watchdog Agent**: Continuously monitors and triggers audits
+
+## 🏆 Competition Features
+
+This project demonstrates **7 key agentic AI concepts**:
+
+### ✅ 1. Multi-Agent System
+- **LLM-Powered Agents**: PolicyMatcher & Critic use Vertex AI (Gemini)
+- **Sequential Workflow**: Coordinator → RiskScanner → PolicyMatcher → ReportWriter
+- **Parallel Execution**: Multiple RiskScanners scan different data sources concurrently
+- **Loop Pattern**: Critic validates and sends feedback for agent refinement
+
+### ✅ 2. Tools
+- **Custom Tools**: GoogleSearchTool for regulation lookup
+- **Built-in Tools**: Google Search, Code Execution (Python sandbox)
+- **OpenAPI Tools**: External regulation API integration
+- **Long-running Operations**: Pause/resume for large scans
+
+### ✅ 3. Sessions & Memory (Google ADK)
+- **Session Management**: ADK-inspired session service with state tracking
+- **Long-term Memory**: ChromaDB memory bank stores historical compliance reports
+- **Trend Detection**: Agents recall past issues to identify recurring problems
+
+### ✅ 4. Context Engineering
+- **Context Compaction**: LLM-based summarization of long regulation lists
+- **Token Optimization**: Reduces context size for faster processing
+
+### ✅ 5. Observability
+- **Logging**: Structured logging with `structlog`
+- **Tracing**: Correlation IDs track agent message flows
+- **Metrics**: Performance tracking (scan duration, accuracy, risk counts)
+- **Dashboard**: Real-time Streamlit UI for agent monitoring
+
+### ✅ 6. Agent Evaluation
+- **Automated Testing**: Precision, recall, F1 metrics for all agents
+- **Synthetic Data**: Test suite with known PII patterns
+- **Quality Metrics**: Critic agent validates output quality
+
+### 🔧 7. Advanced Features
+- **Real PII Detection**: Presidio analyzer (not mock data)
+- **Real RAG**: ChromaDB vector store with SentenceTransformers
+- **Real LLM**: Vertex AI (Gemini Pro) for compliance analysis
 
 ## Installation
 

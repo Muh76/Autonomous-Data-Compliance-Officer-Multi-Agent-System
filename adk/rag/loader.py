@@ -97,3 +97,6 @@ class RegulationLoader:
         logger.info("Regulations loaded from directory", directory=str(directory), count=len(doc_ids))
         return doc_ids
 
+
+
+

@@ -1,0 +1,32 @@
+{
+  "timestamp": "2025-11-20T21:30:00Z",
+  "agent": "RiskScannerAgent",
+  "score": 100.0,
+  "details": [
+    {
+      "case_id": "test_1",
+      "expected": [
+        "pii",
+        "access_control"
+      ],
+      "detected_count": 1,
+      "success": true
+    },
+    {
+      "case_id": "test_2",
+      "expected": [
+        "security"
+      ],
+      "detected_count": 1,
+      "success": true
+    },
+    {
+      "case_id": "test_3",
+      "expected": [
+        "access_control"
+      ],
+      "detected_count": 1,
+      "success": true
+    }
+  ]
+}

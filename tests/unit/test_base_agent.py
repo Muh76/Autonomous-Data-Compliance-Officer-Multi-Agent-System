@@ -43,3 +43,6 @@ async def test_agent_with_components():
     assert result["result"] == "test"
     await agent.shutdown()
 
+
+
+

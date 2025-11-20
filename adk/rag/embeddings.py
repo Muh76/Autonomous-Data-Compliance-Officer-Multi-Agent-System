@@ -56,3 +56,6 @@ def get_embedding_generator(model_name: str = "all-MiniLM-L6-v2") -> EmbeddingGe
     """
     return SentenceTransformerEmbedding(model_name=model_name)
 
+
+
+

@@ -1,6 +1,8 @@
 # Core Dependencies
 pydantic>=2.0.0
 pydantic-settings>=2.0.0
+googlesearch-python>=1.2.3
+presidio-analyzer>=2.2.0
 pyyaml>=6.0
 
 # Google ADK (Agent Development Kit)
@@ -21,6 +23,7 @@ anthropic>=0.7.0
 langchain>=0.1.0
 langchain-openai>=0.0.2
 langchain-anthropic>=0.1.0
+langchain-google-vertexai>=0.0.1
 
 # RAG & Vector Store
 chromadb>=0.4.0
@@ -35,11 +38,13 @@ markdown>=3.5.0
 python-dotenv>=1.0.0
 aiofiles>=23.2.0
 httpx>=0.25.0
-pydantic-email>=2.0.0
+email-validator>=2.0.0
 
 # Testing
 pytest>=7.4.0
 pytest-asyncio>=0.21.0
+streamlit>=1.30.0
+watchdog>=3.0.0
 pytest-cov>=4.1.0
 pytest-mock>=3.12.0
 

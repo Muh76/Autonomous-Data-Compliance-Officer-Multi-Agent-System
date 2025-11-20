@@ -53,6 +53,10 @@ class BaseAgent:
         
         self.logger.info("Base agent utilities initialized", agent_type=self.agent_type)
     
+    async def initialize(self) -> None:
+        """Initialize the agent (async hook)."""
+        self.logger.info("Agent initializing", agent_id=self.agent_id)
+    
     async def send_message(
         self,
         message_type: MessageType,

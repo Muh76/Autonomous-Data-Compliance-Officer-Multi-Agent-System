@@ -37,3 +37,6 @@ def validate_required_fields(data: Dict[str, Any], required_fields: List[str]) -
     missing = [field for field in required_fields if field not in data]
     return len(missing) == 0, missing
 
+
+
+

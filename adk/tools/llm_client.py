@@ -111,6 +111,35 @@ class AnthropicClient(LLMClient):
             async for text in stream.text_stream:
                 yield text
 
+class VertexAIClient(LLMClient):
+    """Google Vertex AI LLM client."""
+    
+    def __init__(self, project_id: Optional[str] = None, location: str = "us-central1", model: str = "gemini-pro"):
+        try:
+            from langchain_google_vertexai import VertexAI
+            # If project_id is None, it will attempt to infer from environment
+            self.client = VertexAI(project=project_id, location=location, model_name=model)
+            self.model = model
+            logger.info("Vertex AI client initialized", model=model, project=project_id)
+        except ImportError:
+            raise ImportError("langchain-google-vertexai not installed. Install with: pip install langchain-google-vertexai")
+        except Exception as e:
+            # Fallback for local development without full GCP credentials
+            logger.warning("Failed to initialize Vertex AI, trying Google GenAI (API Key)", error=str(e))
+            raise e
+
+    async def generate(self, prompt: str, **kwargs) -> str:
+        """Generate text using Vertex AI."""
+        try:
+            return self.client.invoke(prompt)
+        except Exception as e:
+            logger.error("Vertex AI generation failed", error=str(e))
+            raise e
+
+    async def generate_stream(self, prompt: str, **kwargs):
+        """Generate streaming text using Vertex AI."""
+        for chunk in self.client.stream(prompt):
+            yield chunk
 
 def get_llm_client() -> LLMClient:
     """
@@ -135,6 +164,13 @@ def get_llm_client() -> LLMClient:
         if not api_key:
             raise ValueError("ANTHROPIC_API_KEY not set")
         return AnthropicClient(api_key=api_key, model=model)
+    elif provider == "vertex":
+        project_id = llm_config.get("google_project_id")
+        location = llm_config.get("google_location", "us-central1")
+        return VertexAIClient(project_id=project_id, location=location, model=model)
     else:
         raise ValueError(f"Unsupported LLM provider: {provider}")
+
+
+
 

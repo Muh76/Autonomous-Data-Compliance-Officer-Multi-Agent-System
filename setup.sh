@@ -73,3 +73,6 @@ fi
 echo "Setup complete!"
 echo "To start the API server, run: python main.py"
 
+
+
+
