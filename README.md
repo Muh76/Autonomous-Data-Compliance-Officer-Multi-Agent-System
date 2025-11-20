@@ -86,12 +86,44 @@ result = await executor.analyze_data(
 ### ✅ 4. Context Engineering
 - **Context Compaction**: LLM-based summarization of long regulation lists
 - **Token Optimization**: Reduces context size for faster processing
+- **Deduplication**: Removes duplicate regulations
+- **Prioritization**: Keeps most relevant information based on scores
+
+**Example**:
+```python
+from adk.context import ContextCompactor
+
+compactor = ContextCompactor()
+compacted = await compactor.compact_regulations(
+    regulations=long_regulation_list,
+    max_items=3  # Keep top 3 most relevant
+)
+# Reduces from 10+ regulations to 3, saving 70% tokens
+```
 
 ### ✅ 5. Observability
 - **Logging**: Structured logging with `structlog`
-- **Tracing**: Correlation IDs track agent message flows
+- **Tracing**: Correlation IDs track agent message flows across the system
 - **Metrics**: Performance tracking (scan duration, accuracy, risk counts)
 - **Dashboard**: Real-time Streamlit UI for agent monitoring
+
+**Tracing Example**:
+```python
+from adk.observability import Tracer, get_metrics
+
+tracer = Tracer()
+trace_id = tracer.start_trace("compliance_scan")
+
+# Agent executions are automatically traced
+tracer.log_event("start", "RiskScanner")
+# ... agent work ...
+tracer.log_event("end", "RiskScanner", duration_ms=150)
+
+# Get trace summary
+summary = tracer.get_trace_summary(trace_id)
+print(f"Agents involved: {summary['agents_involved']}")
+print(f"Total duration: {summary['total_duration_ms']}ms")
+```
 
 ### ✅ 6. Agent Evaluation
 - **Automated Testing**: Precision, recall, F1 metrics for all agents
