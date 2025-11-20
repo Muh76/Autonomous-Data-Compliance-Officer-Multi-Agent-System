@@ -143,6 +143,27 @@ The API will be available at `http://localhost:8000`
 - `GET /api/v1/agents` - List all agents
 - `GET /api/v1/health` - Health check
 
+### Running the Streamlit Dashboard
+
+```bash
+streamlit run dashboard.py
+```
+
+The dashboard will be available at `http://localhost:8501`
+
+### Testing Multi-Agent Patterns
+
+Demonstrate the three core workflow patterns:
+
+```bash
+python tests/test_workflow_patterns.py
+```
+
+This will show:
+1. **Sequential**: RiskScanner → PolicyMatcher (pipeline)
+2. **Parallel**: 3 RiskScanners running concurrently
+3. **Loop**: PolicyMatcher with Critic feedback (refinement)
+
 ### Using the Agents Programmatically
 
 ```python

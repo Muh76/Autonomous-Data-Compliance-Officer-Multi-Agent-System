@@ -3,7 +3,7 @@
 from typing import Dict, Any, List
 from datetime import datetime
 
-from ..core.base_agent import BaseAgent
+from ..core.adk_agent import ADKAgent
 from ..core.message_bus import MessageType
 from ..core.logger import get_logger
 from ..tools.llm_client import get_llm_client
@@ -11,12 +11,11 @@ from ..tools.llm_client import get_llm_client
 logger = get_logger(__name__)
 
 
-class CriticAgent(BaseAgent):
+class CriticAgent(ADKAgent):
     """Validates quality and consistency of agent outputs."""
     
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.llm_client = None
+    def __init__(self, name: str = "Critic", **kwargs):
+        super().__init__(name=name, **kwargs)
     
     async def initialize(self) -> None:
         """Initialize critic."""

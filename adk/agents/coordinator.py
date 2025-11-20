@@ -8,6 +8,7 @@ from ..core.base_agent import BaseAgent
 from ..core.message_bus import MessageType
 from ..core.task_queue import TaskQueue, TaskPriority
 from ..core.logger import get_logger
+from ..core.workflow_patterns import WorkflowPatterns
 from ..models.models import ScanResult, ComplianceFinding, RiskAssessment
 
 logger = get_logger(__name__)
@@ -20,6 +21,7 @@ class CoordinatorAgent(BaseAgent):
         super().__init__(*args, **kwargs)
         self.active_workflows: Dict[str, Dict[str, Any]] = {}
         self.agent_registry: Dict[str, str] = {}  # agent_type -> agent_id
+        self.workflow_patterns = WorkflowPatterns()  # Multi-agent patterns
     
     async def initialize(self) -> None:
         """Initialize coordinator."""

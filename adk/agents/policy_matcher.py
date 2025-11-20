@@ -4,7 +4,7 @@ from typing import Dict, Any, List
 import uuid
 from datetime import datetime
 
-from ..core.base_agent import BaseAgent
+from ..core.adk_agent import ADKAgent
 from ..core.message_bus import MessageType
 from ..core.logger import get_logger
 from ..rag.retriever import Retriever
@@ -15,14 +15,21 @@ from ..models.models import ComplianceFinding, ComplianceStatus, Severity, Compl
 logger = get_logger(__name__)
 
 
-class PolicyMatcherAgent(BaseAgent):
+class PolicyMatcherAgent(ADKAgent):
     """Matches data practices against compliance regulations."""
     
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.retriever = Retriever()
-        self.search_tool = GoogleSearchTool()
-        self.llm_client = None
+    def __init__(self, name: str = "PolicyMatcher", **kwargs):
+        super().__init__(name=name, **kwargs)
+        self._adco_context["retriever"] = Retriever()
+        self._adco_context["search_tool"] = GoogleSearchTool()
+    
+    @property
+    def retriever(self):
+        return self._adco_context["retriever"]
+    
+    @property
+    def search_tool(self):
+        return self._adco_context["search_tool"]
     
     async def initialize(self) -> None:
         """Initialize policy matcher."""
