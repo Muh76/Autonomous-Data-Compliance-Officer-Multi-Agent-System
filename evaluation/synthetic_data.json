@@ -1,30 +1,364 @@
 [
     {
-        "id": "test_1",
+        "id": "test_001",
+        "agent": "RiskScanner",
         "source": "db_users_prod",
         "source_type": "database",
+        "input_data": {
+            "columns": [
+                "user_id",
+                "email",
+                "ssn",
+                "phone",
+                "address"
+            ],
+            "sample_values": [
+                "john@example.com",
+                "123-45-6789",
+                "+1-555-0100"
+            ]
+        },
         "expected_risks": [
-            "pii",
-            "access_control"
+            "pii_email",
+            "pii_ssn",
+            "pii_phone"
         ],
-        "description": "Production user database with unencrypted emails"
+        "expected_compliance_issues": [
+            "GDPR",
+            "CCPA"
+        ],
+        "description": "Production user database with unencrypted PII"
     },
     {
-        "id": "test_2",
+        "id": "test_002",
+        "agent": "RiskScanner",
         "source": "api_payment_gateway",
         "source_type": "api",
+        "input_data": {
+            "endpoints": [
+                "/payments",
+                "/cards"
+            ],
+            "authentication": "basic"
+        },
         "expected_risks": [
-            "security"
+            "security_weak_auth",
+            "pii_payment"
+        ],
+        "expected_compliance_issues": [
+            "PCI_DSS"
         ],
         "description": "Payment API with weak authentication"
     },
     {
-        "id": "test_3",
+        "id": "test_003",
+        "agent": "RiskScanner",
         "source": "file_share_public",
         "source_type": "file",
+        "input_data": {
+            "path": "/public/documents",
+            "files": [
+                "employee_records.xlsx",
+                "contracts.pdf"
+            ]
+        },
         "expected_risks": [
-            "access_control"
+            "access_control",
+            "pii_exposure"
         ],
-        "description": "Public file share with sensitive docs"
+        "expected_compliance_issues": [
+            "GDPR",
+            "HIPAA"
+        ],
+        "description": "Public file share with sensitive employee documents"
+    },
+    {
+        "id": "test_004",
+        "agent": "RiskScanner",
+        "source": "clean_database",
+        "source_type": "database",
+        "input_data": {
+            "columns": [
+                "product_id",
+                "name",
+                "price",
+                "category"
+            ],
+            "sample_values": [
+                "Widget A",
+                "19.99",
+                "Electronics"
+            ]
+        },
+        "expected_risks": [],
+        "expected_compliance_issues": [],
+        "description": "Clean product database with no PII or compliance issues"
+    },
+    {
+        "id": "test_005",
+        "agent": "PolicyMatcher",
+        "framework": "GDPR",
+        "data_practices": [
+            {
+                "description": "Collecting user emails without explicit consent",
+                "category": "data_collection"
+            }
+        ],
+        "expected_violations": [
+            "GDPR Article 6 - Lawfulness of processing"
+        ],
+        "expected_recommendations": [
+            "Implement consent mechanism",
+            "Add privacy notice"
+        ],
+        "description": "GDPR violation: email collection without consent"
+    },
+    {
+        "id": "test_006",
+        "agent": "PolicyMatcher",
+        "framework": "HIPAA",
+        "data_practices": [
+            {
+                "description": "Storing patient health records in unencrypted S3 bucket",
+                "category": "data_storage"
+            }
+        ],
+        "expected_violations": [
+            "HIPAA Security Rule - Encryption"
+        ],
+        "expected_recommendations": [
+            "Enable S3 encryption",
+            "Implement access controls"
+        ],
+        "description": "HIPAA violation: unencrypted health data storage"
+    },
+    {
+        "id": "test_007",
+        "agent": "PolicyMatcher",
+        "framework": "CCPA",
+        "data_practices": [
+            {
+                "description": "No mechanism for users to request data deletion",
+                "category": "data_rights"
+            }
+        ],
+        "expected_violations": [
+            "CCPA Right to Deletion"
+        ],
+        "expected_recommendations": [
+            "Implement data deletion API",
+            "Add user portal"
+        ],
+        "description": "CCPA violation: missing data deletion mechanism"
+    },
+    {
+        "id": "test_008",
+        "agent": "PolicyMatcher",
+        "framework": "GDPR",
+        "data_practices": [
+            {
+                "description": "Proper consent flow with opt-in checkboxes and privacy policy",
+                "category": "data_collection"
+            }
+        ],
+        "expected_violations": [],
+        "expected_recommendations": [],
+        "description": "Compliant GDPR data collection practice"
+    },
+    {
+        "id": "test_009",
+        "agent": "ReportWriter",
+        "findings": [
+            {
+                "risk_level": "HIGH",
+                "category": "PII Exposure",
+                "description": "Unencrypted SSN in database"
+            },
+            {
+                "risk_level": "MEDIUM",
+                "category": "Access Control",
+                "description": "Public file share"
+            }
+        ],
+        "expected_sections": [
+            "Executive Summary",
+            "Findings",
+            "Recommendations",
+            "Risk Matrix"
+        ],
+        "expected_format": "markdown",
+        "description": "Generate compliance report from findings"
+    },
+    {
+        "id": "test_010",
+        "agent": "Critic",
+        "agent_output": {
+            "type": "compliance_analysis",
+            "content": "This practice violates GDPR Article 6.",
+            "citations": [
+                "GDPR Article 6"
+            ]
+        },
+        "expected_quality_scores": {
+            "factual_accuracy": 0.9,
+            "citation_present": 1.0,
+            "completeness": 0.8
+        },
+        "expected_is_valid": true,
+        "description": "Validate PolicyMatcher output with citations"
+    },
+    {
+        "id": "test_011",
+        "agent": "Critic",
+        "agent_output": {
+            "type": "compliance_analysis",
+            "content": "This violates privacy rules and should be fixed.",
+            "citations": []
+        },
+        "expected_quality_scores": {
+            "factual_accuracy": 0.5,
+            "citation_present": 0.0,
+            "completeness": 0.4
+        },
+        "expected_is_valid": false,
+        "description": "Validate output without citations (should fail)"
+    },
+    {
+        "id": "test_012",
+        "agent": "Watchdog",
+        "monitoring_config": {
+            "check_interval": "daily",
+            "data_sources": [
+                "production_db"
+            ]
+        },
+        "expected_triggers": [
+            "schedule_scan",
+            "alert_on_changes"
+        ],
+        "description": "Watchdog agent scheduling compliance scans"
+    },
+    {
+        "id": "test_013",
+        "agent": "RiskScanner",
+        "source": "medical_records_db",
+        "source_type": "database",
+        "input_data": {
+            "columns": [
+                "patient_id",
+                "diagnosis",
+                "treatment",
+                "insurance_id"
+            ],
+            "sample_values": [
+                "Diabetes Type 2",
+                "Insulin therapy",
+                "INS-123456"
+            ]
+        },
+        "expected_risks": [
+            "phi_diagnosis",
+            "phi_treatment",
+            "pii_insurance"
+        ],
+        "expected_compliance_issues": [
+            "HIPAA"
+        ],
+        "description": "Medical records database with PHI"
+    },
+    {
+        "id": "test_014",
+        "agent": "PolicyMatcher",
+        "framework": "GDPR",
+        "data_practices": [
+            {
+                "description": "Sharing user data with third-party advertisers without consent",
+                "category": "data_sharing"
+            }
+        ],
+        "expected_violations": [
+            "GDPR Article 6 - Lawfulness",
+            "GDPR Article 7 - Consent"
+        ],
+        "expected_recommendations": [
+            "Obtain explicit consent",
+            "Update privacy policy",
+            "Implement consent management"
+        ],
+        "description": "GDPR violation: unauthorized third-party data sharing"
+    },
+    {
+        "id": "test_015",
+        "agent": "RiskScanner",
+        "source": "analytics_logs",
+        "source_type": "file",
+        "input_data": {
+            "log_entries": [
+                "User IP: 192.168.1.1, Action: login",
+                "User email: alice@example.com, Page: /checkout"
+            ]
+        },
+        "expected_risks": [
+            "pii_ip",
+            "pii_email"
+        ],
+        "expected_compliance_issues": [
+            "GDPR",
+            "CCPA"
+        ],
+        "description": "Analytics logs containing IP addresses and emails"
+    },
+    {
+        "id": "test_016",
+        "agent": "Coordinator",
+        "workflow_type": "full_audit",
+        "data_sources": [
+            "production_db",
+            "api_gateway"
+        ],
+        "compliance_frameworks": [
+            "GDPR",
+            "HIPAA"
+        ],
+        "expected_agents_invoked": [
+            "RiskScanner",
+            "PolicyMatcher",
+            "ReportWriter"
+        ],
+        "expected_workflow_pattern": "sequential",
+        "description": "Full compliance audit workflow coordination"
+    },
+    {
+        "id": "test_017",
+        "agent": "RiskScanner",
+        "source": "empty_database",
+        "source_type": "database",
+        "input_data": {
+            "columns": [],
+            "sample_values": []
+        },
+        "expected_risks": [],
+        "expected_compliance_issues": [],
+        "description": "Edge case: empty database with no data"
+    },
+    {
+        "id": "test_018",
+        "agent": "PolicyMatcher",
+        "framework": "CCPA",
+        "data_practices": [
+            {
+                "description": "Selling user data to data brokers",
+                "category": "data_sale"
+            }
+        ],
+        "expected_violations": [
+            "CCPA Right to Opt-Out of Sale"
+        ],
+        "expected_recommendations": [
+            "Implement Do Not Sell mechanism",
+            "Add opt-out link",
+            "Update privacy policy"
+        ],
+        "description": "CCPA violation: data sale without opt-out"
     }
 ]
