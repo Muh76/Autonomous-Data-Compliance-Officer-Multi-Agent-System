@@ -3,7 +3,7 @@ Session service wrapper for Google ADK InMemorySessionService.
 Provides session management and long-term memory integration.
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 from google.adk.sessions import InMemorySessionService, Session
@@ -103,6 +103,176 @@ class ADCOSessionService:
         await self.session_service.delete_session(session_id)
         logger.info("Session deleted", session_id=session_id)
     
+    async def add_message(
+        self,
+        session_id: str,
+        role: str,
+        content: str,
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> None:
+        """
+        Add a message to conversation history.
+        
+        Supports multi-turn conversations with context preservation.
+        
+        Args:
+            session_id: Session identifier
+            role: Message role ('user', 'assistant', 'system')
+            content: Message content
+            metadata: Optional metadata (agent name, timestamp, etc.)
+        """
+        session = await self.get_session(session_id)
+        if not session:
+            # Create session if it doesn't exist
+            session = await self.create_session(session_id)
+        
+        # Get current state
+        state = session.state if hasattr(session, 'state') else {}
+        
+        # Initialize conversation history if not exists
+        if 'conversation_history' not in state:
+            state['conversation_history'] = []
+        
+        # Create message object
+        message = {
+            "role": role,
+            "content": content,
+            "timestamp": datetime.utcnow().isoformat(),
+            "metadata": metadata or {}
+        }
+        
+        # Add to history
+        state['conversation_history'].append(message)
+        
+        # Update session
+        await self.update_session(session_id, state)
+        
+        logger.debug(
+            "Message added to conversation",
+            session_id=session_id,
+            role=role,
+            message_count=len(state['conversation_history'])
+        )
+    
+    async def get_conversation_history(
+        self,
+        session_id: str,
+        max_messages: Optional[int] = None,
+        role_filter: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Get conversation history for a session.
+        
+        Args:
+            session_id: Session identifier
+            max_messages: Maximum number of recent messages to return
+            role_filter: Filter by role ('user', 'assistant', 'system')
+            
+        Returns:
+            List of messages in chronological order
+        """
+        session = await self.get_session(session_id)
+        if not session or not hasattr(session, 'state'):
+            return []
+        
+        history = session.state.get('conversation_history', [])
+        
+        # Apply role filter if specified
+        if role_filter:
+            history = [msg for msg in history if msg.get('role') == role_filter]
+        
+        # Apply max_messages limit (most recent)
+        if max_messages and len(history) > max_messages:
+            history = history[-max_messages:]
+        
+        return history
+    
+    async def get_conversation_context(
+        self,
+        session_id: str,
+        max_tokens: int = 4000,
+        include_system: bool = True
+    ) -> str:
+        """
+        Get conversation context as formatted string for LLM.
+        
+        Implements context window management by truncating old messages.
+        
+        Args:
+            session_id: Session identifier
+            max_tokens: Approximate max tokens (rough estimate: 4 chars = 1 token)
+            include_system: Whether to include system messages
+            
+        Returns:
+            Formatted conversation context
+        """
+        history = await self.get_conversation_history(session_id)
+        
+        # Filter out system messages if requested
+        if not include_system:
+            history = [msg for msg in history if msg.get('role') != 'system']
+        
+        # Build context string
+        context_parts = []
+        total_chars = 0
+        max_chars = max_tokens * 4  # Rough estimate
+        
+        # Add messages from most recent backwards
+        for msg in reversed(history):
+            role = msg.get('role', 'unknown')
+            content = msg.get('content', '')
+            msg_text = f"{role.upper()}: {content}\n\n"
+            msg_chars = len(msg_text)
+            
+            if total_chars + msg_chars > max_chars:
+                # Would exceed limit, stop here
+                break
+            
+            context_parts.insert(0, msg_text)
+            total_chars += msg_chars
+        
+        context = "".join(context_parts)
+        
+        logger.debug(
+            "Generated conversation context",
+            session_id=session_id,
+            messages_included=len(context_parts),
+            total_chars=total_chars
+        )
+        
+        return context
+    
+    async def clear_conversation_history(
+        self,
+        session_id: str,
+        keep_last_n: int = 0
+    ) -> None:
+        """
+        Clear conversation history for a session.
+        
+        Args:
+            session_id: Session identifier
+            keep_last_n: Number of recent messages to keep (0 = clear all)
+        """
+        session = await self.get_session(session_id)
+        if not session or not hasattr(session, 'state'):
+            return
+        
+        state = session.state
+        
+        if 'conversation_history' in state:
+            if keep_last_n > 0:
+                state['conversation_history'] = state['conversation_history'][-keep_last_n:]
+            else:
+                state['conversation_history'] = []
+            
+            await self.update_session(session_id, state)
+            logger.info(
+                "Conversation history cleared",
+                session_id=session_id,
+                kept_messages=keep_last_n
+            )
+    
     async def store_in_long_term_memory(
         self,
         session_id: str,
@@ -157,7 +327,7 @@ class ADCOSessionService:
     
     async def get_session_history(self, session_id: str) -> list:
         """
-        Get session history.
+        Get session history (legacy method for backward compatibility).
         
         Args:
             session_id: Session identifier
