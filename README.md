@@ -21,25 +21,9 @@ ADCO automates the entire compliance lifecycle using **6 specialized AI agents**
 
 ### Agent Architecture
 
-```mermaid
-graph TD
-    User[User/API] --> Coordinator[Coordinator Agent]
-    Coordinator --> RiskScanner[Risk Scanner Agent]
-    Coordinator --> PolicyMatcher[Policy Matcher Agent]
-    Coordinator --> ReportWriter[Report Writer Agent]
-    RiskScanner --> Presidio[Presidio PII Detection]
-    PolicyMatcher --> RAG[ChromaDB RAG]
-    PolicyMatcher --> Gemini[Vertex AI Gemini]
-    Critic[Critic Agent] --> Gemini
-    Watchdog[Watchdog Agent] --> Coordinator
-    
-    style Coordinator fill:#4285F4
-    style RiskScanner fill:#34A853
-    style PolicyMatcher fill:#FBBC04
-    style ReportWriter fill:#EA4335
-    style Critic fill:#9334E6
-    style Watchdog fill:#FF6D00
-```
+![ADCO Architecture](docs/architecture_detailed.png)
+
+*Detailed system architecture showing all 6 specialized agents, their integrations, and data flow patterns*
 
 1. **Coordinator Agent**: Orchestrates workflows (sequential, parallel, loop patterns)
 2. **Risk Scanner Agent**: Detects PII using Presidio (emails, SSNs, phone numbers)
@@ -66,7 +50,7 @@ graph TD
 - ✅ Parallel execution achieves **2-3x speedup** vs sequential
 - ✅ Multi-turn conversations maintain context across 5+ turns
 
-[View Detailed Evaluation Report →](evaluation/evaluation_report.md)
+[View Detailed Evaluation Report →](evaluation/evaluation_report_template.md)
 
 ---
 
@@ -123,6 +107,10 @@ This project implements **8+ advanced agentic AI concepts** from the Google ADK 
 
 **Performance**: Parallel execution achieves **2-3x speedup** over sequential
 
+![Workflow Patterns](docs/workflow_patterns.png)
+
+*Visual representation of sequential, parallel, and loop workflow patterns with performance metrics*
+
 ### ✅ 3. Tool Integration (CORE)
 - **Custom Tools**: GoogleSearchTool for regulation lookup
 - **Built-in Tools**: Code Execution (Python sandbox for data analysis)
@@ -161,7 +149,7 @@ This project implements **8+ advanced agentic AI concepts** from the Google ADK 
 - **Automated Testing**: Evaluation runs on all 6 agents
 - **Quality Validation**: Critic agent ensures output correctness
 
-**Implementation**: [`evaluation/`](evaluation/) | **Results**: [Evaluation Report](evaluation/evaluation_report.md)
+**Implementation**: [`evaluation/`](evaluation/) | **Results**: [Evaluation Report](evaluation/evaluation_report_template.md)
 
 ### ✅ 8. Safety & Guardrails (ADVANCED)
 - **PII Redaction**: Presidio analyzer removes sensitive data
@@ -370,8 +358,110 @@ SOFTWARE.
 
 See the [LICENSE](LICENSE) file for details.
 
-## Contact
+## 📚 Documentation
 
-- Email: mj.babaie@gmail.com
-- LinkedIn: https://www.linkedin.com/in/mohammadbabaie/
-- GitHub: https://github.com/Muh76
+- **[Setup Guide](docs/SETUP.md)** - Quick start and installation
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - Docker, Cloud Run, Kubernetes
+- **[FAQ](docs/FAQ.md)** - 50+ frequently asked questions
+- **[Evaluation Report](evaluation/evaluation_report_template.md)** - Detailed performance metrics
+
+---
+
+## 🎥 Demo & Examples
+
+### Run Live Demos
+
+```bash
+# Multi-turn conversation demo (5 turns)
+python tests/test_multi_turn.py
+
+# Parallel execution demo (2-3x speedup)
+python examples/parallel_retrieval_demo.py
+
+# Workflow patterns demo
+python tests/test_workflow_patterns.py
+
+# Comprehensive evaluation
+python evaluation/evaluate_agents.py
+```
+
+### Quick Start Example
+
+```python
+from adk.agents.risk_scanner import RiskScannerAgent
+from adk.core.session_service import ADCOSessionService
+
+# Initialize agent
+session_service = ADCOSessionService()
+scanner = RiskScannerAgent(session_service=session_service)
+await scanner.initialize()
+
+# Scan for PII
+result = await scanner.process({
+    "source": "production_db",
+    "source_type": "database"
+}, session_id="demo_001")
+
+print(f"Risks found: {result['risks']}")
+```
+
+---
+
+## 🏗️ Built With
+
+- **[Google ADK](https://google.github.io/adk-docs/)** - Agent Development Kit
+- **[Vertex AI (Gemini)](https://cloud.google.com/vertex-ai)** - LLM for compliance analysis
+- **[Presidio](https://microsoft.github.io/presidio/)** - PII detection
+- **[ChromaDB](https://www.trychroma.com/)** - Vector database for RAG
+- **[FastAPI](https://fastapi.tiangolo.com/)** - REST API framework
+- **[Streamlit](https://streamlit.io/)** - Dashboard UI
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## ⭐ Star History
+
+If you find this project useful, please consider giving it a star! ⭐
+
+---
+
+## 📧 Contact
+
+**Mohammad Javad Babaie**
+
+- 📧 Email: [mj.babaie@gmail.com](mailto:mj.babaie@gmail.com)
+- 💼 LinkedIn: [Mohammad Babaie](https://www.linkedin.com/in/mohammadbabaie/)
+- 🐙 GitHub: [@Muh76](https://github.com/Muh76)
+- 📝 Project: [ADCO Repository](https://github.com/Muh76/Autonomous-Data-Compliance-Officer-Multi-Agent-System)
+
+---
+
+## 🙏 Acknowledgments
+
+- Google ADK team for the Agent Development Kit
+- Microsoft for Presidio PII detection library
+- ChromaDB team for the vector database
+- All contributors and supporters of this project
+
+---
+
+<div align="center">
+
+**Made with ❤️ for automated compliance auditing**
+
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+</div>
