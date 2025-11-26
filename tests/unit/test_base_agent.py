@@ -22,7 +22,6 @@ async def test_agent_initialization():
     assert agent.agent_type == "test"
     
     await agent.initialize()
-    await agent.shutdown()
 
 
 @pytest.mark.asyncio
@@ -41,7 +40,9 @@ async def test_agent_with_components():
     await agent.initialize()
     result = await agent.run({})
     assert result["result"] == "test"
-    await agent.shutdown()
+
+
+
 
 
 

@@ -89,7 +89,7 @@ class ReportWriterAgent(BaseAgent):
             "report_id": report.report_id,
             "file_path": str(file_path),
             "format": output_format,
-            "report": report.dict(),
+            "report": report.model_dump(),
         }
     
     def _generate_summary(
@@ -152,7 +152,7 @@ class ReportWriterAgent(BaseAgent):
         file_path = self.output_dir / f"{report.report_id}.json"
         
         with open(file_path, "w") as f:
-            json.dump(report.dict(), f, indent=2, default=str)
+            json.dump(report.model_dump(), f, indent=2, default=str)
         
         self.logger.info("JSON report generated", file_path=str(file_path))
         return file_path

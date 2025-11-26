@@ -89,7 +89,7 @@ class RiskScannerAgent(ADKAgent):
                 MessageType.RESULT,
                 {
                     "scan_id": scan_id,
-                    "risks": [r.dict() for r in risks],
+                    "risks": [r.model_dump() for r in risks],
                     "source": source,
                 },
                 receiver="coordinator",
@@ -97,7 +97,7 @@ class RiskScannerAgent(ADKAgent):
         
         return {
             "scan_id": scan_id,
-            "risks": [r.dict() for r in risks],
+            "risks": [r.model_dump() for r in risks],
             "items_scanned": len(risks),
         }
     

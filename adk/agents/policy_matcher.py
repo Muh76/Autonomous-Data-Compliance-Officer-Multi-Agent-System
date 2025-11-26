@@ -106,16 +106,16 @@ class PolicyMatcherAgent(ADKAgent):
                 MessageType.RESULT,
                 {
                     "framework": framework,
-                    "findings": [f.dict() for f in findings],
-                    "gaps": [g.dict() for g in gaps],
+                    "findings": [f.model_dump() for f in findings],
+                    "gaps": [g.model_dump() for g in gaps],
                 },
                 receiver="coordinator",
             )
         
         return {
             "framework": framework,
-            "findings": [f.dict() for f in findings],
-            "gaps": [g.dict() for g in gaps],
+            "findings": [f.model_dump() for f in findings],
+            "gaps": [g.model_dump() for g in gaps],
         }
     
     async def _analyze_compliance(
@@ -125,6 +125,10 @@ class PolicyMatcherAgent(ADKAgent):
         framework: str
     ) -> ComplianceFinding:
         """Analyze compliance of a practice against a regulation."""
+        # Initialize default values
+        status = ComplianceStatus.UNKNOWN
+        severity = Severity.LOW
+        
         # Use LLM to analyze compliance if available
         if self.llm_client:
             prompt = f"""
