@@ -11,7 +11,10 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt pysqlite3-binary
+
+# Download spaCy model for Presidio
+RUN python -m spacy download en_core_web_lg
 
 # Copy application code
 COPY . .
@@ -24,6 +27,9 @@ EXPOSE 8000
 
 # Run the application
 CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
+
 
 
 

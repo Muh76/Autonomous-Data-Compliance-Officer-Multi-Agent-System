@@ -1,5 +1,10 @@
 """FastAPI application for ADCO system."""
 
+# 🔧 FIX: Swap sqlite3 for pysqlite3 to satisfy ChromaDB requirements
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
