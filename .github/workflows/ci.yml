@@ -34,6 +34,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pytest-cov pytest-asyncio black ruff mypy
+        python -m spacy download en_core_web_lg
     
     - name: Run linting with ruff
       run: |
@@ -50,9 +51,9 @@ jobs:
         mypy adk/ app/ --ignore-missing-imports
       continue-on-error: true
     
-    - name: Run tests with pytest
+    - name: Run unit tests only (skip integration tests that need API keys)
       run: |
-        pytest tests/ -v --cov=adk --cov=app --cov-report=xml --cov-report=term
+        pytest tests/unit/ -v --cov=adk --cov=app --cov-report=xml --cov-report=term
       continue-on-error: true
     
     - name: Upload coverage reports
